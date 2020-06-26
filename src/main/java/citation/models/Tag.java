@@ -1,4 +1,4 @@
-package models;
+package citation.models;
 
 public class Tag {
 	
