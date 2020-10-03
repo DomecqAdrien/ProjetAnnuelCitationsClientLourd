@@ -1,27 +1,21 @@
 package citation.models;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Data;
+
+@Data
 public class Book {
 	
 
-	public int id;
-	public String titre;
-	public Auteur auteur;
-	public int anneeParution;
+	private int id;
+	private int auteurId;
+	private Auteur auteur;
+	private String imageUrl;
+	private String titre;
+	private int anneeParution;
+	private List<Citation> citations;
 	
-	
-	public List<Citation> citations;
-	
-	public Book(String nom, int auteur_id, int anneeParution) {
-		this.titre = nom;
-		this.anneeParution = anneeParution;
-		this.citations = new ArrayList<>();
-	}
-	
-	public Book() {
-	}
 
 
 }
