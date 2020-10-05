@@ -9,12 +9,15 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
-public interface APIs {
+public interface APIInterface {
 	@GET("citation/all")
 	Call<List<Citation>> getAllCitations();
 	
 	@GET("book/all")
 	Call<List<Book>> getAllBooks();
+	
+	@GET("auteur/all")
+	Call<List<Auteur>> getAllAuthors();
 	
 	@GET("book/{id}")
 	Call<Book> getBookById(@Path("id") int id);
