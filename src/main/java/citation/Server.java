@@ -107,7 +107,11 @@ public class Server {
 		System.out.println("citation à chercher "+citationToGet);
 		
 		Citation citationToReturn = citations.stream().filter(c -> c.getCitation().equals(citationToGet)).findFirst().get();
-		
+		try {
+			channel.basicPublish("", replyTo, null, en_cours.replace("%avancement%", "20%").getBytes("UTF-8"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		for(Citation citation: citations) {
 			Collection<Tag> similar = new HashSet<Tag>(citation.getTags());
 			similar.retainAll(citationToReturn.getTags());
@@ -129,7 +133,11 @@ public class Server {
 		
 		int bookId = citationToReturn.getBookId();
 		citationToReturn.setBook(books.stream().filter(b -> b.getId() == bookId).findFirst().get());
-		
+		try {
+			channel.basicPublish("", replyTo, null, en_cours.replace("%avancement%", "80%").getBytes("UTF-8"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		int authorId = citationToReturn.getBook().getAuteurId();			
 		citationToReturn.getBook().setAuteur(auteurs.stream().filter(a -> a.getId() == authorId).findFirst().get());
 		citationToReturn.getBook().getAuteur().setBooks(books.stream().filter(b -> b.getAuteurId() == authorId).collect(Collectors.toList()));
@@ -144,10 +152,14 @@ public class Server {
 		List<Citation> citationsToReturn = new ArrayList<>();
 		List<String> mots = new ArrayList<>();
 		
+		try {
+			channel.basicPublish("", replyTo, null, en_cours.replace("%avancement%", "20%").getBytes("UTF-8"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		for(String mot : trimCitation(text).split(" ")) {
 			if(mot.length() > 3 && !Character.isUpperCase(mot.charAt(0))) {
 				System.out.println(mot);
-				//Response<List<Dicolink>> ld = DicolinkService.getAllSynonymes(mot, "fgr4EokUt-ahnd-Lv5qCmS3Xw_aZU0he").execute();
 				DicolinkService.getAllSynonymes(mot, "fgr4EokUt-ahnd-Lv5qCmS3Xw_aZU0he").enqueue(new Callback<List<Dicolink>>(){
 
 					@Override
@@ -163,15 +175,8 @@ public class Server {
 					@Override
 					public void onFailure(Call<List<Dicolink>> call, Throwable t) {
 						t.printStackTrace();
-					}
-					
+					}	
 				});
-
-				List<String> synonymes = new ArrayList<>();
-				
-				//TODO : check synonymes
-				for(String synonyme: synonymes)
-					mots.add(synonyme);
 			}
 			mots.add(mot);
 		}
@@ -195,6 +200,11 @@ public class Server {
 				citation.setTauxRessemblance(countSameWords);
 				citationsToReturn.add(citation);
 			}
+		}
+		try {
+			channel.basicPublish("", replyTo, null, en_cours.replace("%avancement%", "90%").getBytes("UTF-8"));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		
 		citationsToReturn = citationsToReturn.stream().sorted(Comparator.comparing(Citation::getTauxRessemblance).reversed()).collect(Collectors.toList());
